@@ -25,34 +25,23 @@ import project.User;
 
 public class Projects {
 
-	// WebDriver driver = new ChromeDriver();
 	public static WebDriver driver = new FirefoxDriver();
 			
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
-		//Name of the file containing report names
-		String fileName = "resources/users.csv";
-			
-		//read reports from file and put them in an array
 
 		HashMap<String,String> hmap = new HashMap<String,String>();
 		boolean pinEx=false,pinNav=false,pwIncorrect=false;
 		
-		//file stuff
-//		File file = new File("resources/test.csv");
-//		if(!file.exists()){
-//			file.createNewFile();
-//		}
-//		FileWriter fw = new FileWriter(file,true);
-//		BufferedWriter writer = new BufferedWriter(fw);
-//		
-//		
-		
-		//=====================================================================
+		//======================= Handle the files =================================
 		
 		FileHandler fh = new FileHandler("resources/users.csv","resources/test.csv");
 		fh.createFile();
+		
+		//create the user
+		User user1 = new User("qausa","4Quality@WLV",Environments.DEV90.url(),driver);
+		
 		
 //		try {
 //			 //hmap = readFile(fileName);
@@ -76,10 +65,7 @@ public class Projects {
 //	  			runCheck(user,writer);
 //
 //	  		}
-	  		
-		
-		User user1 = new User("qausa","4Quality@WLV",Environments.DEV90.url(),driver);
-		//user1.sigIn();
+	  			
 		
 //		for(int i=1;i<3;i++){
 //			String projectName = driver.findElement(By.xpath(".//*[@id='projects_ProjectsStyle']/table/tbody/tr/td["+i+"]/div/table/tbody/tr/td[2]/div/a")).getText();
@@ -93,8 +79,6 @@ public class Projects {
 		
 	  	fh.close();
 	  	
-//		writer.flush();
-//		writer.close();
 		
 	}
 
@@ -152,31 +136,10 @@ public class Projects {
 		}catch(Exception e){
 			//System.out.println(e);
 		}
-		System.out.println(" Pin Ex: "+ pinEx + " PIN Nav: "+pinNav);
+		//System.out.println(" Pin Ex: "+ pinEx + " PIN Nav: "+pinNav);
 		fw.writeToFile(pinEx+",");
 		 fw.writeToFile(pinNav+",");
 	}
 	
-	public static HashMap<String,String> readFile(String fileName) throws IOException,NullPointerException
-	{
-		
-		HashMap<String,String> hmap = new HashMap<String,String>();
-		
-				//Open file to read from
-				FileReader fil = new FileReader (fileName);
-				//Load data from file to buffer 
-				BufferedReader textReader = new BufferedReader(fil);
-				
-				String lineofText;
-				while((lineofText = textReader.readLine()) !=null){
-					
-					String [] params ;
-					params = lineofText.split(",");
-					
-					hmap.put(params[0], params[1]);
-				}
-				
-				textReader.close();
-				return hmap;
-	}
+	
 }
