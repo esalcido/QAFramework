@@ -92,7 +92,6 @@ public class Projects {
 		
 		pwIncorrect = checkPW(pwIncorrect,writer);
 
-		
 		//user.waitSec(10);
 		if(pwIncorrect==true){
 		user.signOut();
