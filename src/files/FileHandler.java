@@ -3,37 +3,46 @@ package files;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import project.Report;
 
 public class FileHandler {
 
 	String fileName;
 	String outfileName;
-	File infile;
+	public static File infile;
 	File outfile;
 	FileWriter fw ;
 	BufferedWriter writer ;
 	
+
+	
+	//constructor for both an input and out file
 	public FileHandler(String ifn,String ofn) throws IOException{
 		fileName = ifn;
 		outfileName= ofn;
+	}
 	
+	public boolean createFile() throws IOException,FileNotFoundException{
+		
 		infile = new File(fileName);
 		outfile = new File(outfileName);
 		
 		fw = new FileWriter(outfile,true);
 		writer = new BufferedWriter(fw);
-	
-	}
-	
-	public boolean createFile() throws IOException{
-
+		
 		if(!infile.exists()){
 			infile.createNewFile();
 			
+			return true;
+		}else if(!outfile.exists()){
+			outfile.createNewFile();
 			return true;
 		}
 		else{
@@ -41,13 +50,13 @@ public class FileHandler {
 		}
 	}
 	
-	public static HashMap<String,String> readFile(String fileName) throws IOException,NullPointerException
+	public static HashMap<String,String> readFile() throws IOException,NullPointerException
 	{
 		
 		HashMap<String,String> hmap = new HashMap<String,String>();
 		
 				//Open file to read from
-				FileReader fil = new FileReader (fileName);
+				FileReader fil = new FileReader (infile);
 				//Load data from file to buffer 
 				BufferedReader textReader = new BufferedReader(fil);
 				
@@ -64,7 +73,45 @@ public class FileHandler {
 				return hmap;
 	}
 	
+	public static ArrayList<Report> readFileArr() throws IOException,NullPointerException
+	{
+		
+		ArrayList aList = new ArrayList<Report>();
+		
+				//Open file to read from
+				FileReader fil = new FileReader (infile);
+				//Load data from file to buffer 
+				BufferedReader textReader = new BufferedReader(fil);
+				
+				
+				//read in all tokens from line of text
+				String lineofText;
+				while((lineofText = textReader.readLine()) !=null){
+					
+					String [] params ;
+					params = lineofText.split(",");
+					
+					//put all tokens into a report
+					//the report object will get the filename automatically
+					Report rept = new Report(params);
+					aList.add(rept);
+				
+				}
+				
+				textReader.close();
+				return aList;
+	}
 	
+	
+	
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	public boolean writeToFile(String message) throws IOException{
 
 		System.out.println(message);

@@ -34,47 +34,70 @@ public class Projects {
 		HashMap<String,String> hmap = new HashMap<String,String>();
 		boolean pinEx=false,pinNav=false,pwIncorrect=false;
 		
+		String environment = Environments.DEV86.url();
+		
 		//======================= Handle the files =================================
 		
-		FileHandler fh = new FileHandler("resources/users.csv","resources/test.csv");
+		//handles file with usernames and passwords
+		FileHandler fh = new FileHandler("resources/users1.csv","resources/output/useroutput.csv");
 		fh.createFile();
 		
-		//create the user
-		User user1 = new User("qausa","4Quality@WLV",Environments.DEV90.url(),driver);
-		
-		
-//		try {
-//			 //hmap = readFile(fileName);
-//			hmap = fh.readFile(fileName);
-//			
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			 //hmap = readFile(fileName);
+			hmap = fh.readFile();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 	  //print the hashmap
-//	  		Set set = hmap.entrySet();
-//	  		Iterator iterator = set.iterator();
-//	  		while(iterator.hasNext()){
-//	  			Map.Entry<String, String> mentry = (Map.Entry<String, String>)iterator.next();
-//	  			
-//	  			User user = new User(mentry.getKey(),mentry.getValue(),Environments.DEV86.url(),driver);
-//	  			
-//	  			System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
-//	  			
-//	  			runCheck(user,writer);
-//
-//	  		}
+	  		Set set = hmap.entrySet();
+	  		Iterator iterator = set.iterator();
+	  		while(iterator.hasNext()){
+	  			Map.Entry<String, String> mentry = (Map.Entry<String, String>)iterator.next();
 	  			
-		
+	  			User user = new User(mentry.getKey(),mentry.getValue(),environment,driver);
+	  			
+	  			System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
+	  			fh.writeToFile("User: "+mentry.getKey()+",");
+	  			if(user.signIn()){
+	  				//write password result to file
+	  				fh.writeToFile("True,");
+	  				
+	  				//check what project users belong to.  Explorer or navigator
+	  				checkProjects(pinEx,pinNav,fh);
+	  				
+	  				//user.runReport(1);
+	  				
+	  				
+		  			user.signOut();
+	  			}
+	  			else{
+	  				fh.writeToFile("False,");
+	  			}
+	  			fh.writeToFile("\r\n");
+
+	  		}
+	  			
+		//dynamically get the objects
 //		for(int i=1;i<3;i++){
 //			String projectName = driver.findElement(By.xpath(".//*[@id='projects_ProjectsStyle']/table/tbody/tr/td["+i+"]/div/table/tbody/tr/td[2]/div/a")).getText();
 //			
 //			System.out.println(projectName);
 //		}
 		
-		runCheck(user1,fh);
+		//runCheck(user1,fh);
 
+		 
+		//create the user
+		//User user1 = new User("qausa","4Quality@WLV",environment,driver);	
+		//get reports from file		
+//		user1.signIn();
+//		user1.runReport(2);
+//		user1.signOut();
+	
+		
 	  	System.out.println("End of script.");
 		
 	  	fh.close();
@@ -82,43 +105,50 @@ public class Projects {
 		
 	}
 
-	public static void runCheck(User user, FileHandler writer) throws IOException{
-		boolean pinEx=false,pinNav=false,pwIncorrect=false;
-		
-		user.sigIn();
-		
-		//System.out.print("user: "+ user.getUid());
-		writer.writeToFile(user.getUid()+",");
-		
-		pwIncorrect = checkPW(pwIncorrect,writer);
-
-		//user.waitSec(10);
-		if(pwIncorrect==true){
-		user.signOut();
-		}
-		checkProjects(pinEx,pinNav,writer);
-		
-		user.signOut();
-	}
-	
-	public static boolean checkPW(boolean pwIncorrect,FileHandler fw) throws IOException{
-		try{
-		//check if pw is correct	
-		pwIncorrect = driver.findElement(By.xpath(".//*[@id='mstrWeb_error']/div/div[2]") ).isDisplayed(); 
-		
-		//System.out.print(" password: "+pwIncorrect+" ");
-		
-		//write to file
-				fw.writeToFile(pwIncorrect+",");
-				
-		}catch(Exception e){
-			//System.out.print(" caught. password: "+pwIncorrect+" ");
-			fw.writeToFile(pwIncorrect+",");
-			
-		}
-		
-		return pwIncorrect;
-	}
+//	public static void runCheck(User user, FileHandler writer) throws IOException{
+//		boolean pinEx=false,pinNav=false,pwIncorrect=false;
+//		
+//		user.signIn();
+//		//System.out.print("user: "+ user.getUid());
+//		writer.writeToFile(user.getUid()+",");
+//		
+//		//check password
+//		//pwIncorrect = checkPW(pwIncorrect,writer);
+//		try{
+//		if( !user.isPasswordValid()){
+//			//write to file
+//			writer.writeToFile(pwIncorrect+",");
+//			user.signOut();
+//		}
+//		}catch(Exception e){
+//			writer.writeToFile(pwIncorrect+",");
+//			
+//		}
+//		
+//		
+//		checkProjects(pinEx,pinNav,writer);
+//		
+//		user.signOut();
+//	}
+//	
+//	public static boolean checkPW(boolean pwIncorrect,FileHandler fw) throws IOException{
+//		try{
+//		//check if pw is correct	
+//		pwIncorrect = driver.findElement(By.xpath(".//*[@id='mstrWeb_error']/div/div[2]") ).isDisplayed(); 
+//		
+//		//System.out.print(" password: "+pwIncorrect+" ");
+//		
+//		//write to file
+//				fw.writeToFile(pwIncorrect+",");
+//				
+//		}catch(Exception e){
+//			//System.out.print(" caught. password: "+pwIncorrect+" ");
+//			fw.writeToFile(pwIncorrect+",");
+//			
+//		}
+//		
+//		return pwIncorrect;
+//	}
 	
 	public static void checkProjects(boolean pinEx, boolean pinNav,FileHandler fw) throws IOException{
 		try{
@@ -137,7 +167,7 @@ public class Projects {
 		}
 		//System.out.println(" Pin Ex: "+ pinEx + " PIN Nav: "+pinNav);
 		fw.writeToFile(pinEx+",");
-		 fw.writeToFile(pinNav+",");
+		 fw.writeToFile(pinNav+" ");
 	}
 	
 	
