@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -23,6 +24,15 @@ import files.FileHandler;
 import project.Environments;
 import project.User;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import com.mysql.jdbc.Driver;
+
+
 public class Projects {
 
 	public static WebDriver driver = new FirefoxDriver();
@@ -30,6 +40,23 @@ public class Projects {
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 
+		//Database stuff
+//		try{
+//			Class.forName("com.mysql.jdbc.Driver");  
+//			Connection con=DriverManager.getConnection(  
+//			"jdbc:mysql://localhost/qa_platform","root","qazwsx");  
+//			
+//			Statement stmt = con.createStatement();
+//			ResultSet rs = stmt.executeQuery("select * from User" );
+//			
+//			while(rs.next()){
+//				System.out.println(rs.getString(2)+ " " +rs.getString(3));
+//			}
+//			
+//			//System.out.println("success");
+//		}catch(Exception e){
+//			System.out.println("error connecting to db"+e);
+//		}
 
 		HashMap<String,String> hmap = new HashMap<String,String>();
 		boolean pinEx=false,pinNav=false,pwIncorrect=false;
@@ -51,34 +78,68 @@ public class Projects {
 			e.printStackTrace();
 		}
 		
+		//get users from file
+		ArrayList<User> users = fh.readFileUsersArr();
+		
+		for(User usr:users){
+			
+			//set env and driver for them
+			usr.setEnvironment(environment);
+			usr.setDriver(driver);
+			System.out.println("user: "+usr.toString());
+			
+			
+			//System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
+  			fh.writeToFile("User: "+usr.getUid()+",");
+  			if(usr.signIn()){
+  				//write password result to file
+  				fh.writeToFile("True,");
+  				
+  				//check what project users belong to.  Explorer or navigator
+  				//checkProjects(pinEx,pinNav,fh);
+  				
+  				usr.waitSec(5);
+  				//run a report
+  				usr.runReport(4);
+  				
+	  			usr.signOut();
+  			}
+  			else{
+  				fh.writeToFile("False,");
+  			}
+  			fh.writeToFile("\r\n");
+			
+		}
+		
 	  //print the hashmap
-	  		Set set = hmap.entrySet();
-	  		Iterator iterator = set.iterator();
-	  		while(iterator.hasNext()){
-	  			Map.Entry<String, String> mentry = (Map.Entry<String, String>)iterator.next();
-	  			
-	  			User user = new User(mentry.getKey(),mentry.getValue(),environment,driver);
-	  			
-	  			System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
-	  			fh.writeToFile("User: "+mentry.getKey()+",");
-	  			if(user.signIn()){
-	  				//write password result to file
-	  				fh.writeToFile("True,");
-	  				
-	  				//check what project users belong to.  Explorer or navigator
-	  				checkProjects(pinEx,pinNav,fh);
-	  				
-	  				//user.runReport(1);
-	  				
-	  				
-		  			user.signOut();
-	  			}
-	  			else{
-	  				fh.writeToFile("False,");
-	  			}
-	  			fh.writeToFile("\r\n");
-
-	  		}
+//	  		Set set = hmap.entrySet();
+//	  		Iterator iterator = set.iterator();
+//	  		while(iterator.hasNext()){
+//	  			Map.Entry<String, String> mentry = (Map.Entry<String, String>)iterator.next();
+//	  			
+//	  			User user = new User(mentry.getKey(),mentry.getValue(),environment,driver);
+//	  			
+//	  			System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
+//	  			fh.writeToFile("User: "+mentry.getKey()+",");
+//	  			if(user.signIn()){
+//	  				//write password result to file
+//	  				fh.writeToFile("True,");
+//	  				
+//	  				//check what project users belong to.  Explorer or navigator
+//	  				//checkProjects(pinEx,pinNav,fh);
+//	  				
+//	  				user.waitSec(5);
+//	  				//run a report
+//	  				user.runReport(4);
+//	  				
+//		  			user.signOut();
+//	  			}
+//	  			else{
+//	  				fh.writeToFile("False,");
+//	  			}
+//	  			fh.writeToFile("\r\n");
+//
+//	  		}
 	  			
 		//dynamically get the objects
 //		for(int i=1;i<3;i++){
@@ -86,10 +147,7 @@ public class Projects {
 //			
 //			System.out.println(projectName);
 //		}
-		
-		//runCheck(user1,fh);
-
-		 
+	 
 		//create the user
 		//User user1 = new User("qausa","4Quality@WLV",environment,driver);	
 		//get reports from file		
@@ -104,51 +162,6 @@ public class Projects {
 	  	
 		
 	}
-
-//	public static void runCheck(User user, FileHandler writer) throws IOException{
-//		boolean pinEx=false,pinNav=false,pwIncorrect=false;
-//		
-//		user.signIn();
-//		//System.out.print("user: "+ user.getUid());
-//		writer.writeToFile(user.getUid()+",");
-//		
-//		//check password
-//		//pwIncorrect = checkPW(pwIncorrect,writer);
-//		try{
-//		if( !user.isPasswordValid()){
-//			//write to file
-//			writer.writeToFile(pwIncorrect+",");
-//			user.signOut();
-//		}
-//		}catch(Exception e){
-//			writer.writeToFile(pwIncorrect+",");
-//			
-//		}
-//		
-//		
-//		checkProjects(pinEx,pinNav,writer);
-//		
-//		user.signOut();
-//	}
-//	
-//	public static boolean checkPW(boolean pwIncorrect,FileHandler fw) throws IOException{
-//		try{
-//		//check if pw is correct	
-//		pwIncorrect = driver.findElement(By.xpath(".//*[@id='mstrWeb_error']/div/div[2]") ).isDisplayed(); 
-//		
-//		//System.out.print(" password: "+pwIncorrect+" ");
-//		
-//		//write to file
-//				fw.writeToFile(pwIncorrect+",");
-//				
-//		}catch(Exception e){
-//			//System.out.print(" caught. password: "+pwIncorrect+" ");
-//			fw.writeToFile(pwIncorrect+",");
-//			
-//		}
-//		
-//		return pwIncorrect;
-//	}
 	
 	public static void checkProjects(boolean pinEx, boolean pinNav,FileHandler fw) throws IOException{
 		try{

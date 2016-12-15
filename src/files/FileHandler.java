@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import project.Report;
+import project.User;
 
 public class FileHandler {
 
@@ -73,6 +74,36 @@ public class FileHandler {
 				return hmap;
 	}
 	
+	public static ArrayList<User> readFileUsersArr() throws IOException{
+		ArrayList aList = new ArrayList<User>();
+		
+		//Open file to read from
+		FileReader fil = new FileReader (infile);
+		//Load data from file to buffer 
+		BufferedReader textReader = new BufferedReader(fil);
+		
+		//read in all tokens from line of text
+		String lineofText;
+		while((lineofText = textReader.readLine()) !=null){
+			
+			String [] params ;
+			params = lineofText.split(",");
+			
+			//put all tokens into a report
+			//the report object will get the filename automatically
+			
+			User rept = new User(params[0],params[1],Integer.parseInt(params[2]) );
+			aList.add(rept);
+		
+		}
+		
+		textReader.close();
+		
+		
+		return aList;
+		
+	}
+	
 	public static ArrayList<Report> readFileArr() throws IOException,NullPointerException
 	{
 		
@@ -102,8 +133,6 @@ public class FileHandler {
 				return aList;
 	}
 	
-	
-	
 	public String getFileName() {
 		return fileName;
 	}
@@ -114,7 +143,7 @@ public class FileHandler {
 
 	public boolean writeToFile(String message) throws IOException{
 
-		System.out.println(message);
+		System.out.println("wrote '"+ message +"' to file.");
 		writer.write(message);
 		
 		return true;
