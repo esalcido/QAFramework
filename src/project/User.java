@@ -53,6 +53,14 @@ public class User {
 		return driver;
 	}
 	
+	public int getNumOfUsers() {
+		return numOfUsers;
+	}
+
+	public void setNumOfUsers(int numOfUsers) {
+		this.numOfUsers = numOfUsers;
+	}
+
 	public String getEnvironment() {
 		return environment;
 	}
@@ -86,15 +94,21 @@ public class User {
 		//Find Login and click on it;
 		driver.findElement(By.id("3054")).click();
 		
-		
-		if(this.isPasswordValid()){
-			System.out.println("Signed in. ");
-			return true;
-		}
-		else{
-			System.out.println("Password invalid\n");
-			return false;
-		}
+		System.out.println("Signed in: "+ getUid());
+		return true;
+//		try{
+//		
+//		if(this.isPasswordValid()){
+//			System.out.println("Signed in: " + getUid());
+//			return true;
+//		}
+//		else{
+//			System.out.println("Password invalid\n");
+//			return false;
+//		}
+//		}catch(Exception e){
+//			return true;
+//		}
 		
 		
 	}
@@ -173,19 +187,16 @@ public class User {
 	public  boolean isPasswordValid(){
 		System.out.println("I am here at sign in");
 		
-		try{
+		
 			System.out.println("errorMessg:  "+driver.findElement(By.xpath(errorMessage) ).isDisplayed());
-			if(driver.findElement(By.xpath(errorMessage) ).isDisplayed()){
+			if(driver.findElement(By.xpath(errorMessage) ).isDisplayed())
 				return false;
-			}else{
-			return true;
-			}
-		}catch(Exception e ){
-			return true;
-		}
+			else
+				return true;
+		
 	}
 	
-	public void runReport(int maxAmnt) throws IOException{
+	public int runReport(int start) throws IOException{
 		//TODO fool proof if file is not 
 		
 		 boolean found=false;
@@ -202,9 +213,9 @@ public class User {
 			ArrayList<Report> arrList = fh2.readFileArr();
 			System.out.println("Got 'em.\n");
 		
-		
+			int maxAmnt = start + getNumOfUsers();
 		//run through all reports in the text file
-		for( int i =0;i< maxAmnt;i++){
+		for( int i =start;i< maxAmnt;i++){
 			try{
 				//get to the report
 				//get file path and click through to the project
@@ -216,8 +227,8 @@ public class User {
 					
 					//try{
 						try{
-								clickON("//a[text()='"+pth+"']",1);
-								System.out.println("clicked on "+pth);
+							clickON("//a[text()='"+pth+"']",1);
+							System.out.println("clicked on "+pth);
 		
 						}catch(Exception e){
 							clickON("//*[@id='main']/div[2]/li/span/a/span[text()='"+pth+"']",1);
@@ -275,6 +286,7 @@ public class User {
 			}
 			
 		}
+		return maxAmnt;
 		
 		
 		

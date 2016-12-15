@@ -80,16 +80,14 @@ public class Projects {
 		
 		//get users from file
 		ArrayList<User> users = fh.readFileUsersArr();
-		
-		for(User usr:users){
-			
+		int marker =0;
+		for(int i=0;i<users.size();i++){
+			User usr = users.get(i);
 			//set env and driver for them
 			usr.setEnvironment(environment);
 			usr.setDriver(driver);
-			System.out.println("user: "+usr.toString());
 			
 			
-			//System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
   			fh.writeToFile("User: "+usr.getUid()+",");
   			if(usr.signIn()){
   				//write password result to file
@@ -97,12 +95,14 @@ public class Projects {
   				
   				//check what project users belong to.  Explorer or navigator
   				//checkProjects(pinEx,pinNav,fh);
-  				
+  			
   				usr.waitSec(5);
   				//run a report
-  				usr.runReport(4);
+  				usr.runReport(marker);
   				
 	  			usr.signOut();
+	  			
+	  			marker += usr.getNumOfUsers();
   			}
   			else{
   				fh.writeToFile("False,");
@@ -110,36 +110,6 @@ public class Projects {
   			fh.writeToFile("\r\n");
 			
 		}
-		
-	  //print the hashmap
-//	  		Set set = hmap.entrySet();
-//	  		Iterator iterator = set.iterator();
-//	  		while(iterator.hasNext()){
-//	  			Map.Entry<String, String> mentry = (Map.Entry<String, String>)iterator.next();
-//	  			
-//	  			User user = new User(mentry.getKey(),mentry.getValue(),environment,driver);
-//	  			
-//	  			System.out.print("User: "+mentry.getKey() + " password: "+mentry.getValue()+"\n");
-//	  			fh.writeToFile("User: "+mentry.getKey()+",");
-//	  			if(user.signIn()){
-//	  				//write password result to file
-//	  				fh.writeToFile("True,");
-//	  				
-//	  				//check what project users belong to.  Explorer or navigator
-//	  				//checkProjects(pinEx,pinNav,fh);
-//	  				
-//	  				user.waitSec(5);
-//	  				//run a report
-//	  				user.runReport(4);
-//	  				
-//		  			user.signOut();
-//	  			}
-//	  			else{
-//	  				fh.writeToFile("False,");
-//	  			}
-//	  			fh.writeToFile("\r\n");
-//
-//	  		}
 	  			
 		//dynamically get the objects
 //		for(int i=1;i<3;i++){
