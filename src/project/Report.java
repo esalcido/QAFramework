@@ -7,6 +7,7 @@ public class Report {
 
 	String [] filePath;
 	String fileName;
+	String filePathStr;
 	
 	public Report(){
 		
@@ -21,6 +22,13 @@ public class Report {
 		//remove last element from the array
 		filePath = ArrayUtils.remove(filePath, filePath.length-1);
 	}
+public Report(String path, String fn){
+		
+		filePathStr = path;
+		fileName = fn;
+
+	}
+
 
 	public String[] getFilePath() {
 		return filePath;

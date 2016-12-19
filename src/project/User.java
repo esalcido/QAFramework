@@ -8,10 +8,12 @@ import java.util.concurrent.TimeUnit;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import database.Database;
 import files.FileHandler;
 
 public class User {
@@ -19,8 +21,9 @@ public class User {
 	private  String uid;
 	private  String password ;
 	private  String environment;
-	private  WebDriver driver;
+	private  static WebDriver driver;
 	private int numOfUsers;
+	private ArrayList<Report> reports;
 	
 	//selenium objects
 	public static final String logoutButton = "//*[@id='menuTabs']/div[2]/div[1]/span[14]/a";
@@ -30,17 +33,26 @@ public class User {
 	//public static final String topNavHomeLink = "//*[@id='projects_ProjectsStyle']/table/tbody/tr/td[1]/div/table/tbody/tr/td[2]/a";
 	
 	
-	public User(String id, String pw, String env,WebDriver drv){
+	public User(String id, String pw, String env){
 		uid = id;
 		password = pw;
 		environment = env;
-		driver = drv;
+		//driver = new FirefoxDriver();
 	}
 	
+	public ArrayList<Report> getReports() {
+		return reports;
+	}
+
+	public void setReports(ArrayList<Report> reports) {
+		this.reports = reports;
+	}
+
 	public User(String id, String pw,int nou){
 		uid = id;
 		password = pw;
 		numOfUsers = nou;
+		//driver = new FirefoxDriver();
 	}
 	
 	public  String getUid(){
@@ -83,6 +95,7 @@ public class User {
 	
 	
 	public boolean signIn(){
+		driver = new FirefoxDriver();
 		driver.get(environment);
 		
 		//Find User name field and enter qausa
@@ -94,21 +107,21 @@ public class User {
 		//Find Login and click on it;
 		driver.findElement(By.id("3054")).click();
 		
-		System.out.println("Signed in: "+ getUid());
-		return true;
-//		try{
-//		
-//		if(this.isPasswordValid()){
-//			System.out.println("Signed in: " + getUid());
-//			return true;
-//		}
-//		else{
-//			System.out.println("Password invalid\n");
-//			return false;
-//		}
-//		}catch(Exception e){
-//			return true;
-//		}
+//		System.out.println("Signed in: "+ getUid());
+//		return true;
+		try{
+		
+		if(this.isPasswordValid()){
+			System.out.println("Signed in: " + getUid());
+			return true;
+		}
+		else{
+			System.out.println("Password invalid\n");
+			return false;
+		}
+		}catch(Exception e){
+			return true;
+		}
 		
 		
 	}
@@ -126,7 +139,7 @@ public class User {
 			driver.findElement(By.xpath(".//*[@id='mstrWeb_content']/div[1]/a") ).click();	
 		}
 		
-		
+		driver.close();
 		System.out.println("Signed out\n");
 	}
 	
@@ -183,7 +196,12 @@ public class User {
 		return str;
 	}
 	
-	
+	public void printReports(){
+		for(Report rpt:reports){
+			System.out.println("\t"+rpt.filePath+ " "+rpt.fileName);
+		}
+		
+	}
 	public  boolean isPasswordValid(){
 		System.out.println("I am here at sign in");
 		
@@ -287,10 +305,103 @@ public class User {
 			
 		}
 		return maxAmnt;
-		
-		
-		
+	
 	}
 	
+	
+	
+	//get reports pertaining to this user
+	public void runReportDB() throws IOException{
+		//TODO fool proof if file is not 
+		
+		 boolean found=false;
+		
+		//get report from DB
+//		Database db = new Database("localhost/qa_platform","root","qazwsx");
+//		db.connect();
+//		
+//		
+//		db.disconnect();
+		
+		//get to home page
+		clickON("//a[text()='PIN Explorer']",1);
+		
+		
+			
+		//run through all reports in the text file
+		//for( int i =start;i< maxAmnt;i++){
+		for( Report rpt: reports){
+//			try{
+//				//get to the report
+//				//get file path and click through to the project
+//				System.out.println("Report: " + );
+//				
+//				//click through to project
+				String [] filePath = rpt.filePath;
+				for(String pth: filePath){
+					System.out.println("clicked on "+pth);
+					//try{
+						try{
+							clickON("//a[text()='"+pth+"']",1);
+							System.out.println("clicked on "+pth);
+		
+						}catch(Exception e){
+							clickON("//*[@id='main']/div[2]/li/span/a/span[text()='"+pth+"']",1);
+							System.out.println("ex. clicked on "+pth);
+						}
+						System.out.println("i am here ");
+						
+				}
+//				  found = driver.findElements(By.xpath("//a[text()='"+arrList.get(i).getFileName()+"']")).size() >0;
+//				System.out.println("file found:" +found );
+//				//click on project
+//				
+//				if(found){
+//					clickON("//a[text()='"+arrList.get(i).getFileName()+"']",1);
+//				
+//					//click on run report
+//					clickON(runReportButton,10);
+//					
+//					//look for second report button
+//					try{
+//						//click on run report
+//						clickON(runReportButton,10);
+//					}catch(Exception e){
+//						System.out.println("Did not find second run button");
+//					}
+//					
+//					//wait 15 minutes
+//					driver.manage().timeouts().implicitlyWait(15, TimeUnit.MINUTES);
+//					
+//					//look for toolbar
+//					//class="mstrTabbedMenuVBoxItem"
+//					if( driver.findElement(By.xpath("//*[@class='mstrTabbedMenuVBoxItem']") ).isDisplayed()){
+//					
+//						System.out.println("Ran Report: "+ arrList.get(i).getFileName());
+//					}
+//					else{
+//						System.out.println("Did not run report");
+//					}
+//					
+//					//click back home
+//					clickON(topNavHomeLink,5000);
+//					System.out.println("clicked home");
+//					
+//				}else{
+//					//click back home
+//					clickON(topNavHomeLink,5000);
+//					System.out.println("clicked home");
+//				}
+//			
+//			}catch(Exception e){
+//				
+//				System.out.println("Something wrong happened. \n"+ e);
+//				System.out.println("Trying next user.\n");
+//				break;
+//			}
+			
+		}
+		
+	}
 
 }

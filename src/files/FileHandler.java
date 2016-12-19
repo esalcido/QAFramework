@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import database.Database;
 import project.Report;
 import project.User;
 
@@ -22,7 +23,6 @@ public class FileHandler {
 	FileWriter fw ;
 	BufferedWriter writer ;
 	
-
 	
 	//constructor for both an input and out file
 	public FileHandler(String ifn,String ofn) throws IOException{
@@ -101,6 +101,44 @@ public class FileHandler {
 		
 		
 		return aList;
+		
+	}
+	
+	public static boolean readFileAddUsersToDB() throws IOException{
+		try{
+		ArrayList aList = new ArrayList<User>();
+		
+		//Open file to read from
+		FileReader fil = new FileReader (infile);
+		//Load data from file to buffer 
+		BufferedReader textReader = new BufferedReader(fil);
+		
+		//create db and add users in here
+		//DATABASE STUFF
+		Database db = new Database("localhost/qa_platform","root","qazwsx");
+		db.connect();
+		
+		//read in all tokens from line of text
+		String lineofText;
+		while((lineofText = textReader.readLine()) !=null){
+			
+			String [] params ;
+			params = lineofText.split(",");
+			
+			System.out.println(params[0]+" "+params[1]);
+			//put all tokens into a report
+			//the report object will get the filename automatically
+			db.insertUsers(params);
+			
+		
+		}
+		
+		textReader.close();
+		db.disconnect();
+		return true;
+		}catch(Exception e){
+		return false;
+		}
 		
 	}
 	
