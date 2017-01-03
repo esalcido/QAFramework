@@ -22,9 +22,11 @@ public class Report {
 		//remove last element from the array
 		filePath = ArrayUtils.remove(filePath, filePath.length-1);
 	}
-public Report(String path, String fn){
+	
+	public Report(String path, String fn){
 		
 		filePathStr = path;
+		//System.out.println("file path string: "+filePathStr);
 		fileName = fn;
 
 	}

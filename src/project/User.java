@@ -2,18 +2,15 @@ package project;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import database.Database;
 import files.FileHandler;
 
 public class User {
@@ -21,9 +18,10 @@ public class User {
 	private  String uid;
 	private  String password ;
 	private  String environment;
-	private  static WebDriver driver;
+	private   WebDriver driver;
 	private int numOfUsers;
 	private ArrayList<Report> reports;
+	
 	
 	//selenium objects
 	public static final String logoutButton = "//*[@id='menuTabs']/div[2]/div[1]/span[14]/a";
@@ -33,11 +31,11 @@ public class User {
 	//public static final String topNavHomeLink = "//*[@id='projects_ProjectsStyle']/table/tbody/tr/td[1]/div/table/tbody/tr/td[2]/a";
 	
 	
-	public User(String id, String pw, String env){
+	public User(String id, String pw, String env,WebDriver drv){
 		uid = id;
 		password = pw;
 		environment = env;
-		//driver = new FirefoxDriver();
+		driver= drv;
 	}
 	
 	public ArrayList<Report> getReports() {
@@ -52,7 +50,7 @@ public class User {
 		uid = id;
 		password = pw;
 		numOfUsers = nou;
-		//driver = new FirefoxDriver();
+		
 	}
 	
 	public  String getUid(){
@@ -95,9 +93,10 @@ public class User {
 	
 	
 	public boolean signIn(){
-		driver = new FirefoxDriver();
+
+		try{	
+			
 		driver.get(environment);
-		
 		//Find User name field and enter qausa
 		driver.findElement(By.id("Uid")).sendKeys(uid);
 				
@@ -109,21 +108,81 @@ public class User {
 		
 //		System.out.println("Signed in: "+ getUid());
 //		return true;
-		try{
+
+		//isPasswordValid();
+//		System.out.println(isPasswordValid());
+//		if(isPasswordValid()){
+//			System.out.println("Signed in: " + getUid());
+//			return true;
+//		}
+//		else{
+//			System.out.println("Password invalid\n");
+//			return false;
+//		}
+//		
+//		}catch(Exception e){
+//			e.printStackTrace();
+//			return true;
+//		}
 		
-		if(this.isPasswordValid()){
-			System.out.println("Signed in: " + getUid());
+		
+		//System.out.println("I am here at sign in");
+		//try{
+//			
+//			System.out.println("I am here after isdisplayed");
+//			//System.out.println("i am in try");
+		
+		waitSec(2);
+		boolean isDisplayed  = driver.findElement(By.xpath(errorMessage) ).isDisplayed();
+		System.out.println("is displayed: "+isDisplayed);
+		if( ! isDisplayed){
+		//	if(driver.findElement(By.xpath("//a[text()='PIN Explorer']") ).isDisplayed()){
+				
+				System.out.println("Signed in User: "+ getUid() );
+				return true;
+			}
+			else{
+				
+				return false;
+				
+			}
+		}catch(Exception e){
+			
+			System.out.println("Password valid.  did not find error message.");
+			//e.printStackTrace();
 			return true;
 		}
-		else{
-			System.out.println("Password invalid\n");
+		
+		
+		
+	}
+public  boolean isPasswordValid(){
+		
+		System.out.println("I am here at sign in");
+		
+		
+		boolean errorIsDisplayed = driver.findElement(By.xpath(errorMessage) ).isDisplayed();
+		
+		try{
+//			System.out.println("errorMessg:  "+errorIsDisplayed);
+//			System.out.println("I am here after isdisplayed");
+//			//System.out.println("i am in try");
+		//if(driver.findElement(By.xpath(errorMessage) ).isDisplayed()){
+			if(driver.findElement(By.xpath("//a[text()='PIN Explorer']") ).isDisplayed()){
+				
+				return false;
+			}
+			else{
+				
+				return true;
+				
+			}
+		}catch(Exception e){
+			System.out.println("i am in catch");
+			System.out.println("Password valid.  did not find error message.");
+			//e.printStackTrace();
 			return false;
 		}
-		}catch(Exception e){
-			return true;
-		}
-		
-		
 	}
 	
 	public void signOut(){
@@ -139,7 +198,7 @@ public class User {
 			driver.findElement(By.xpath(".//*[@id='mstrWeb_content']/div[1]/a") ).click();	
 		}
 		
-		driver.close();
+		//driver.close();
 		System.out.println("Signed out\n");
 	}
 	
@@ -177,7 +236,10 @@ public class User {
 	{
 		driver.manage().timeouts().implicitlyWait(x, TimeUnit.SECONDS);
 	}
-	
+	public void waitMin( int x)
+	{
+		driver.manage().timeouts().implicitlyWait(x, TimeUnit.MINUTES);
+	}
 	private  void explicitWait(String ElementxPath) {
 		WebDriverWait wait = new WebDriverWait(driver, 4);
 		wait.until(ExpectedConditions.elementToBeClickable(By.xpath(ElementxPath)));	
@@ -202,17 +264,6 @@ public class User {
 		}
 		
 	}
-	public  boolean isPasswordValid(){
-		System.out.println("I am here at sign in");
-		
-		
-			System.out.println("errorMessg:  "+driver.findElement(By.xpath(errorMessage) ).isDisplayed());
-			if(driver.findElement(By.xpath(errorMessage) ).isDisplayed())
-				return false;
-			else
-				return true;
-		
-	}
 	
 	public int runReport(int start) throws IOException{
 		//TODO fool proof if file is not 
@@ -228,7 +279,7 @@ public class User {
 		
 		System.out.println("Fetching reports from Text file "+ fh2.getFileName());
 		
-			ArrayList<Report> arrList = fh2.readFileArr();
+			 ArrayList<Report> arrList = fh2.readFileArr();
 			System.out.println("Got 'em.\n");
 		
 			int maxAmnt = start + getNumOfUsers();
@@ -314,30 +365,20 @@ public class User {
 	public void runReportDB() throws IOException{
 		//TODO fool proof if file is not 
 		
-		 boolean found=false;
-		
-		//get report from DB
-//		Database db = new Database("localhost/qa_platform","root","qazwsx");
-//		db.connect();
-//		
-//		
-//		db.disconnect();
-		
+		 System.out.println(" i am here at run report db");
 		//get to home page
 		clickON("//a[text()='PIN Explorer']",1);
 		
-		
-			
 		//run through all reports in the text file
 		//for( int i =start;i< maxAmnt;i++){
 		for( Report rpt: reports){
-//			try{
+			try{
 //				//get to the report
 //				//get file path and click through to the project
 //				System.out.println("Report: " + );
 //				
-//				//click through to project
-				String [] filePath = rpt.filePath;
+				//click through to project
+				String [] filePath = rpt.filePathStr.split("/");
 				for(String pth: filePath){
 					System.out.println("clicked on "+pth);
 					//try{
@@ -352,56 +393,108 @@ public class User {
 						System.out.println("i am here ");
 						
 				}
-//				  found = driver.findElements(By.xpath("//a[text()='"+arrList.get(i).getFileName()+"']")).size() >0;
-//				System.out.println("file found:" +found );
-//				//click on project
-//				
-//				if(found){
-//					clickON("//a[text()='"+arrList.get(i).getFileName()+"']",1);
-//				
-//					//click on run report
-//					clickON(runReportButton,10);
-//					
-//					//look for second report button
-//					try{
-//						//click on run report
-//						clickON(runReportButton,10);
-//					}catch(Exception e){
-//						System.out.println("Did not find second run button");
-//					}
-//					
-//					//wait 15 minutes
-//					driver.manage().timeouts().implicitlyWait(15, TimeUnit.MINUTES);
-//					
-//					//look for toolbar
-//					//class="mstrTabbedMenuVBoxItem"
-//					if( driver.findElement(By.xpath("//*[@class='mstrTabbedMenuVBoxItem']") ).isDisplayed()){
-//					
-//						System.out.println("Ran Report: "+ arrList.get(i).getFileName());
-//					}
-//					else{
-//						System.out.println("Did not run report");
-//					}
-//					
-//					//click back home
-//					clickON(topNavHomeLink,5000);
-//					System.out.println("clicked home");
-//					
+				//  found = driver.findElements(By.xpath("//a[text()='"+ rpt.getFileName()+"']")).size() >0;
+				//System.out.println("file found:" +found );
+				//click on project
+				
+				//if(found){
+					clickON("//a[text()='"+rpt.getFileName()+"']",1);
+				
+					//click on run report
+					clickON(runReportButton,10);
+					
+					//look for second report button
+					try{
+						//click on run report
+						clickON(runReportButton,10);
+					}catch(Exception e){
+						System.out.println("Did not find second run button");
+					}
+					
+					//wait 15 minutes
+					driver.manage().timeouts().implicitlyWait(15, TimeUnit.MINUTES);
+					
+					//look for toolbar
+					//class="mstrTabbedMenuVBoxItem"
+					if( driver.findElement(By.xpath("//*[@class='mstrTabbedMenuVBoxItem']") ).isDisplayed()){
+					
+						System.out.println("Ran Report: "+ rpt.getFileName());
+					}
+					else{
+						System.out.println("Did not run report");
+					}
+					
+					//click back home
+					clickON(topNavHomeLink,5000);
+					System.out.println("clicked home");
+					
 //				}else{
 //					//click back home
 //					clickON(topNavHomeLink,5000);
 //					System.out.println("clicked home");
 //				}
-//			
-//			}catch(Exception e){
-//				
-//				System.out.println("Something wrong happened. \n"+ e);
-//				System.out.println("Trying next user.\n");
-//				break;
-//			}
+			
+			}catch(Exception e){
+				
+				System.out.println("Something wrong happened. \n"+ e);
+				System.out.println("Trying next user.\n");
+				break;
+			}
 			
 		}
 		
 	}
-
+	
+	//run all reports for this user.
+	//traverse and get all the folders and reports
+	//run reports on current directory and move to the next 
+	//TODO create method to dynamically run reports recursive 
+	public void traverseReports(){
+		
+		
+		clickON("//a[text()='PIN Explorer']",5);
+		clickON("//a[text()='My Reports']",5);
+		
+		clickON("//a[text()='Edward Test Cases']",10);
+		
+		waitSec(10);
+		
+		//dynamically get the objects
+		for(int i=1;i<3;i++){
+//			String projectName = driver.findElement(By.xpath(".//*[@id='projects_ProjectsStyle']/table/tbody/tr/td["+i+"]/div/table/tbody/tr/td[2]/div/a")).getText();
+			//String projectName = driver.findElement(By.xpath("//*[@id='FolderIcons']/tbody/tr/td["+i+"]/div/table/tbody/tr/td[2]/div/span/a")).getText();
+			
+			String projectName="";
+			String projectType="";
+			try{
+				projectName = driver.findElement(By.xpath("//*[@id='FolderIcons']/tbody/tr[1]/td["+i+"]/div/table/tbody/tr/td[2]/div/span/a")).getText();
+				projectType = driver.findElement(By.xpath("//*[@id='FolderIcons']/tbody/tr[1]/td["+i+"]/div/table/tbody/tr/td[2]")).getAttribute("oty");
+				
+			
+				System.out.println("Folder name: "+projectType);
+				System.out.println("Folder type: "+projectName);
+			
+			
+			
+			}catch(Exception e){
+				projectType = driver.findElement(By.xpath("//*[@id='FolderIcons']/tbody/tr[2]/td/div/table/tbody/tr/td")).getAttribute("oty");
+				
+				System.out.println("Folder name: "+projectName);
+			}
+			
+			//if it is a folder click through
+//			if(projectType.equals("8")){
+//				clickON("//a[text()='"+ driver.findElement(By.xpath("//*[@id='FolderIcons']/tbody/tr[1]/td["+i+"]/div/table/tbody/tr/td[2]/a")).getText() +"']",1);
+//				
+//			}else{
+//				clickON(driver.findElement(By.xpath("//*[@id='FolderIcons']/tbody/tr[2]/td/div/table/tbody/tr/td")).getText(),1);
+//			}
+			
+			
+		}
+	
+	}
+	
+	
+	
 }

@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
+import aggregates.Aggregate;
 import project.Report;
 import project.User;
 
@@ -125,5 +126,37 @@ public class Database {
 		}
 		
 	}
+	
+	//grab reports based on user
+		public ArrayList<Aggregate> getAggregates(String userType){
+			
+			Statement st;
+			Aggregate agg;
+			ArrayList<Aggregate> aggregates = new ArrayList<Aggregate>();
+			try{
+				st = con.createStatement();
+			
+				String sqlString = "SELECT * FROM aggregate_names WHERE userType='"+userType+"'";
+				
+				ResultSet rs = st.executeQuery(sqlString);
+				while(rs.next()){
+					
+					
+					agg = new Aggregate( rs.getString(2), rs.getString(3) );
+					aggregates.add(agg);
+					//System.out.println("from db report: "+rs.getString(1)+" "+ rs.getString(2));
+				}
+				
+				st.execute(sqlString);
+				st.close();
+				
+				return aggregates;
+				
+			}catch(Exception e){
+				e.printStackTrace();
+				return aggregates;
+			}
+			
+		}
 	
 }
