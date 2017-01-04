@@ -223,7 +223,7 @@ public  boolean isPasswordValid(){
 		
 		//Find the element for the specified path and save it in "element".
 		WebElement element = driver.findElement(By.xpath(xpath));
-		System.out.println("web element: "+element);
+		//System.out.println("web element: "+element);
 		//Instantiate an Action Object to perform an action an "element".
 		//Actions actions = new Actions(driver);
 		
