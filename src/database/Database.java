@@ -142,7 +142,7 @@ public class Database {
 				while(rs.next()){
 					
 					
-					agg = new Aggregate( rs.getString(2), rs.getString(3) );
+					agg = new Aggregate( rs.getString(2), rs.getString(3),rs.getString(4) );
 					aggregates.add(agg);
 					//System.out.println("from db report: "+rs.getString(1)+" "+ rs.getString(2));
 				}

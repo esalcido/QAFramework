@@ -80,6 +80,7 @@ public class Projects {
 			HashMap dev90_toyota_xpath = new HashMap();
 
 			dev90_toyota_xpath.put("input_box","//input[@id='id_mstr45_txt']");
+			dev90_toyota_xpath.put("dropdown_arrow","//*[@id='id_mstr79']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div/div[1]/img");
 			dev90_toyota_xpath.put("attribute_available",".//*[@id='id_mstr79']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div/div[2]/div[3]/div[4]/div[1]/span");
 			dev90_toyota_xpath.put("add_attribute_value","//*[@id='id_mstr80']/img");
 			dev90_toyota_xpath.put("status_radio_btn",".//*[@id='id_mstr94ListContainer']/div[2]");
@@ -87,11 +88,44 @@ public class Projects {
 			dev90_toyota_xpath.put("top_breadcrumb","//*[@id='mstr61']/div/div[2]/span[7]/a");
 			
 		
+			HashMap dev90_fordmarkets_xpath = new HashMap();
+			
+			dev90_fordmarkets_xpath.put("input_box","//input[@id='id_mstr45_txt']");
+			dev90_fordmarkets_xpath.put("dropdown_arrow","//*[@id='id_mstr79']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div/div[1]/img");
+			dev90_fordmarkets_xpath.put("attribute_available",".//*[@id='id_mstr79']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]");
+			dev90_fordmarkets_xpath.put("add_attribute_value","//*[@id='id_mstr80']/img");
+			dev90_fordmarkets_xpath.put("status_radio_btn",".//*[@id='id_mstr94ListContainer']/div[2]");
+			dev90_fordmarkets_xpath.put("run_btn","//*[@id='id_mstr99']");
+			dev90_fordmarkets_xpath.put("top_breadcrumb",".//*[@id='mstr61']/div/div[2]/span[7]/a");
+			
+			HashMap new_aggs_xpath = new HashMap();
+			
+			new_aggs_xpath.put("input_box","//*[@id='id_mstr44_txt']");
+			new_aggs_xpath.put("dropdown_arrow","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[1]/img");
+			new_aggs_xpath.put("attribute_available","//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/span");
+			new_aggs_xpath.put("add_attribute_value","//*[@id='id_mstr79']/img");
+			new_aggs_xpath.put("status_radio_btn","//*[@id='id_mstr93ListContainer']/div[2]");
+			new_aggs_xpath.put("run_btn","//*[@id='id_mstr98']");
+			new_aggs_xpath.put("top_breadcrumb","//*[@id='mstr61']/div/div[2]/span[7]/a");
+			
+			HashMap used_aggs_xpath = new HashMap();
+			
+			used_aggs_xpath.put("input_box","//*[@id='id_mstr44_txt']");
+			used_aggs_xpath.put("dropdown_arrow","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[1]/img");
+			used_aggs_xpath.put("attribute_available","//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/span");
+			used_aggs_xpath.put("add_attribute_value","//*[@id='id_mstr79']/img");
+			used_aggs_xpath.put("status_radio_btn","//*[@id='id_mstr93ListContainer']/div[2]");
+			used_aggs_xpath.put("run_btn","//*[@id='id_mstr98']");
+			used_aggs_xpath.put("top_breadcrumb","//*[@id='mstr61']/div/div[2]/span[7]/a");
+			
+			System.out.println("aggs size: "+ aggs.size() );
 			//for(Aggregate ag:aggs){
-			for(int i = 7 ;i<aggs.size(); i ++){
-				user.waitSec(5);
+			for(int i = 0 ;i<aggs.size(); i ++){
 				
-				System.out.println("Aggregate: "+ aggs.get(i).toString());
+				user.waitSec(5);
+				Aggregate agg = aggs.get(i);
+				
+				System.out.println("Aggregate: "+ agg.toString());
 			
 				user.waitSec(10);
 				
@@ -109,59 +143,40 @@ public class Projects {
 
 				user.waitSec( 5);
 
-				driver.findElement(By.xpath("//a[text()='" + aggs.get(i).getName() + "']")).click();
+				//if new or used
+				if(agg.getAggType().equals("new")){
+					System.out.println("this agg is new");
+					user.clickON("//a[contains(text(),'New Vehicle Aggregates')]");
+				}
+				if(agg.getAggType().equals("used")){
+					System.out.println("this agg is used");
+					user.clickON("//a[contains(text(),'Used Vehicle Aggregates')]");
+				}
+				
+				
+				driver.findElement(By.xpath("//a[text()='" + agg.getName() + "']")).click();
 				
 				//enter aggregate name
-				if( aggs.get(i).getName().equals("Toyota Region Aggregates")){
-					
-//					//expand the list of attribute options
-//					String input_box = "//input[@id='id_mstr45_txt']";
-//					driver.findElement(By.xpath(input_box)).sendKeys(aggs.get(i).getName() + " "+ aggs.get(i).getUserType() );
-//	
-//					//choose the value for the attribute
-//					String attribute_available = ".//*[@id='id_mstr79']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div/div[2]/div[3]/div[4]/div[1]/span";
-//					driver.findElement(By.xpath(attribute_available)).click();
-//					
-//					//print the attribute for testing purposes
-//					String element = driver.findElement(By.xpath(attribute_available)).getText();
-//					System.out.println("\n" + element);
-//				
-//					//add the value to the selected box
-//					String add_attribute_value = "//*[@id='id_mstr80']/img";
-//					user.clickON(add_attribute_value);
-//					
-//					//select status
-//					String status_radio_btn = ".//*[@id='id_mstr94ListContainer']/div[2]";
-//					driver.findElement(By.xpath(status_radio_btn)).click();
-//					
-//					//wait for the page to respond
-//					user.waitMin( 15);
-//					
-//					try
-//					{
-//						//click run document
-//						String run_btn = "//*[@id='id_mstr99']";
-//						driver.findElement(By.xpath(run_btn)).click();
-//					}
-//					catch(Exception e)
-//					{
-//						System.out.println(aggs.get(i).getName() +" Timed Out.");
-//					}
-//						
-//					//click on continue box90
-//					String top_breadcrumb = "//*[@id='mstr61']/div/div[2]/span[7]/a";
-//					driver.findElement(By.xpath(top_breadcrumb)).click();
-//				
-//					//switch back to parent window
-//					driver.switchTo().window(parent_Window);
-//					System.out.println("Back to parent window = " + driver.getTitle());
-					
-					createAggregate(dev90_toyota_xpath, aggs.get(i) , user, parent_Window);
+				if( agg.getName().equals("Toyota Region Aggregates")){
+
+					createAggregate(dev90_toyota_xpath, agg , user, parent_Window);
 				
+				}
+				else if( agg.getName().equals("Ford Market & Region Aggregates") ){
+					
+					createAggregate(dev90_fordmarkets_xpath, agg , user, parent_Window);
+				}
+				else if(agg.getAggType().equals("new") ){
+					System.out.println("creating new");
+					createAggregate(new_aggs_xpath, agg , user, parent_Window);
+				}
+				else if(agg.getAggType().equals("used") ){
+					System.out.println("creating used");
+					createAggregate(used_aggs_xpath, agg , user, parent_Window);
 				}
 				else{
 					
-					driver.findElement(By.xpath("//input[@id='id_mstr44_txt']")).sendKeys(aggs.get(i).getName() + " "+ aggs.get(i).getUserType() );
+					driver.findElement(By.xpath("//input[@id='id_mstr44_txt']")).sendKeys(agg.getName() + " "+ agg.getUserType() );
 
 					String titleText = driver.findElement(By.xpath("//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/span")).getText();
 					
@@ -231,7 +246,7 @@ public class Projects {
 					}
 					catch(Exception e)
 					{
-						System.out.println(aggs.get(i).getName() +" Timed Out.");
+						System.out.println(agg.getName() +" Timed Out.");
 						
 					}
 						
@@ -371,9 +386,14 @@ public class Projects {
 	
 	private static void createAggregate(HashMap hm, Aggregate agg, User user, String parent_Window){
 
-		// 
-		//agg.getName() + " "+ agg.getUserType()
-		driver.findElement(By.xpath(hm.get("input_box").toString() ) ).sendKeys(agg.getName() + " "+ agg.getUserType());;
+		//if not new or used click on dropdown arrow
+		if( agg.getAggType().equals("new") || agg.getAggType().equals("used")){
+			driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() ) ).click();
+		}
+		 
+		//input the agg name
+		driver.findElement(By.xpath(hm.get("input_box").toString() ) ).sendKeys(agg.getName() + " "+ agg.getUserType());
+		
 
 		//choose the value for the attribute
 		
