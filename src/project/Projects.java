@@ -48,33 +48,75 @@ public class Projects {
 		boolean pinEx=false,pinNav=false,pwIncorrect=false;
 		
 //		String environment = Environments.DEV86.url();
-		String environment = Environments.DEV90.url();
+		String environment = Environments.DEV3.url();
 		
 		//======================= Handle the files =================================
 		
 		//handles file with usernames and passwords
-		FileHandler fh = new FileHandler("resources/users1.csv","resources/output/useroutput.csv");
-		fh.createFile();
+//		FileHandler fh = new FileHandler("resources/users1.csv","resources/output/useroutput.csv");
+//		fh.createFile();
 		
 		//reads in users and inserts them to the DB
 		//fh.readFileAddUsersToDB();
 		
 		//Run reports of users from the database
 			//runReportsFromDB(environment);
+			//User.runReportsFromDB(environment,driver);
 
 		//=============================================================================
 
+		//parameters: userName driver 
+		
 		//grab users from DB
 			Database db = new Database("localhost/qa_platform","root","qazwsx");
 			db.connect();
-			ArrayList<Aggregate> aggs = db.getAggregates("usa");
+			
+			String userName = "qausa";
+			String aggUserName = "";
+			User user = new User(userName,"4Quality@WLV",environment,driver);
+			user.signIn();
+			
+			switch(userName){
+			case "qausa":
+				aggUserName = "usa";
+				break;
+			case "qacan":
+				aggUserName = "can";
+				break;
+			case "qagst":
+				aggUserName = "gst";
+				break;
+			}
+			ArrayList<Aggregate> aggs = db.getAggregates(aggUserName);
+			
 			db.disconnect();
 			
-			User user = new User("qausa","4Quality@WLV",environment,driver);
-			user.signIn();
+			
 			
 			//get to home page
 			user.clickON("//a[text()='PIN Explorer']",1);
+			
+			HashMap initial_xpath = new HashMap();
+
+			initial_xpath.put("input_box","//input[@id='id_mstr44_txt']");
+			initial_xpath.put("title_text_xpath","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/span");
+			initial_xpath.put("dropdown_arrow","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/img");
+			initial_xpath.put("attribute_available","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[2]/div[3]/div[1]/div[1]/span");
+			initial_xpath.put("add_attribute_value","//*[@id='id_mstr79']/img");
+			initial_xpath.put("status_radio_btn","//*[@id='id_mstr93ListContainer']/div[2]");
+			initial_xpath.put("run_btn","//*[@id='id_mstr98']");
+			initial_xpath.put("top_breadcrumb","//*[@id='mstr61']/div/div[2]/span[7]/a");
+			
+			HashMap hasAggText_xpath = new HashMap();
+			
+			hasAggText_xpath.put("input_box","//input[@id='id_mstr44_txt']");
+			hasAggText_xpath.put("title_text_xpath","//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/span");
+			hasAggText_xpath.put("dropdown_arrow","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[1]/img");
+			hasAggText_xpath.put("attribute_available","//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[3]/div[2]/div[1]/span");
+			hasAggText_xpath.put("add_attribute_value","//*[@id='id_mstr79']/img");
+			hasAggText_xpath.put("status_radio_btn","//*[@id='id_mstr93ListContainer']/div[2]");
+			hasAggText_xpath.put("run_btn","//*[@id='id_mstr98']");
+			hasAggText_xpath.put("top_breadcrumb","//*[@id='mstr61']/div/div[2]/span[7]/a");
 			
 			//set up hashmap for toyota xpath assignments
 			HashMap dev90_toyota_xpath = new HashMap();
@@ -120,15 +162,16 @@ public class Projects {
 			
 			System.out.println("aggs size: "+ aggs.size() );
 			//for(Aggregate ag:aggs){
-			for(int i = 0 ;i<aggs.size(); i ++){
+			for(int i = 0 ;i<aggs.size(); i++){
 				
 				user.waitSec(5);
 				Aggregate agg = aggs.get(i);
 				
-				System.out.println("Aggregate: "+ agg.toString());
+				System.out.println("\nAggregate: "+ agg.toString());
 			
 				user.waitSec(10);
 				
+
 				//click on aggregates in the left menu 
 				user.clickON("//a[contains(text(),'Aggregates')]");
 				
@@ -139,9 +182,10 @@ public class Projects {
 				
 				//switching to child window
 				
-				user.clickON("//a[contains(text(),'Create Aggregates')]");
+				
+				user.clickON("//a[contains(text(),'Delete Aggregates')]");
+//				user.clickON("//a[contains(text(),'Create Aggregates')]");
 
-				user.waitSec( 5);
 
 				//if new or used
 				if(agg.getAggType().equals("new")){
@@ -153,18 +197,18 @@ public class Projects {
 					user.clickON("//a[contains(text(),'Used Vehicle Aggregates')]");
 				}
 				
-				
+				//clck on aggregate
 				driver.findElement(By.xpath("//a[text()='" + agg.getName() + "']")).click();
 				
 				//enter aggregate name
 				if( agg.getName().equals("Toyota Region Aggregates")){
-
-					createAggregate(dev90_toyota_xpath, agg , user, parent_Window);
-				
+					user.waitSec(5);
+					createAggregateToyotaFord(dev90_toyota_xpath, agg, user, parent_Window);
+					
 				}
 				else if( agg.getName().equals("Ford Market & Region Aggregates") ){
 					
-					createAggregate(dev90_fordmarkets_xpath, agg , user, parent_Window);
+					createAggregateToyotaFord(dev90_fordmarkets_xpath, agg, user, parent_Window);
 				}
 				else if(agg.getAggType().equals("new") ){
 					System.out.println("creating new");
@@ -181,102 +225,38 @@ public class Projects {
 					String titleText = driver.findElement(By.xpath("//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div[1]/span")).getText();
 					
 					boolean hasAggregateText = titleText.contains("Aggregate");
-					System.out.println("titiletext has agg text in it? "+ hasAggregateText);
+					System.out.println("title text has agg text in it? "+ hasAggregateText);
 					
 					if(!hasAggregateText){
 		
 						System.out.println("titleText: " + titleText);
 						
-						//expand the list of attribute options
-						driver.findElement(By.xpath("//span[@id='id_mstr78']/div[2]/div/div/div[2]"+ "/div[3]/div/div[2]/div[3]/div[2]/div[1]/img")).click();
-						
-		
-						//choose the value for the attribute
-						driver.findElement(By.xpath("//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div/div/div[1]/div[1]")).click();
-						
-						//print the attribute for testing purposes
-						String element = driver.findElement(By.xpath("//span[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[2]/div/div/div[1]/div[1]")).getText();
-						System.out.println("\n" + element);
-		
-						
-						//add the value to the selected box
-						//driver.findElement(By.xpath("//*[@id='id_mstr79']/img")).click();
-		
-						//select status
-						driver.findElement(By.xpath("//*[@id='id_mstr93ListContainer']/div[2]")).click();
-					
-					}
-				
-					
-					else{
-							//==================================================================================
-							// expand first attribute
-							
-							//box 90
-							driver.findElement(By.xpath("//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[1]/img")).click();
-							
-							// choose the value
-	//						driver.findElement(By.xpath("//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[3]/div[5]")).click();
-							driver.findElement(By.xpath(".//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[3]/div[2]/div[1]/span")).click();
-							
-							String element = driver.findElement(By.xpath(".//*[@id='id_mstr78']/div[2]/div/div/div[2]/div[3]/div/div[2]/div[3]/div[1]/div[2]/div[3]/div[2]/div[1]/span")).getText();
-							System.out.println("\n" + element);
-					
-							user.waitSec(15);
-							
-							//add the value to the selected box
-							//driver.findElement(By.xpath("//*[@id='id_mstr79']/img")).click();
-							
-							//select status
-							driver.findElement(By.xpath("//*[@id='id_mstr93ListContainer']/div[2]")).click();
-					}
-					//driver.findElement(By.xpath("//*[@id='id_mstr79']/img")).click();
-					user.clickON("//*[@id='id_mstr79']/img");
-					//select status
-					driver.findElement(By.xpath("//*[@id='id_mstr93ListContainer']/div[2]")).click();
-					
-					//wait for the page to respond
-					user.waitMin( 15);
-					
-					try
-					{
-						//click run document
-						driver.findElement(By.xpath("//*[@id='id_mstr98']")).click();
-					
-					}
-					catch(Exception e)
-					{
-						System.out.println(agg.getName() +" Timed Out.");
-						
-					}
-						
-					//click on continue box90
-					driver.findElement(By.xpath(".//*[@id='mstr61']/div/div[2]/span[7]/a")).click();
-							
-					//driver.findElement(By.xpath("//*[@id='mstr29']/div")).click();
+						createAggregate(initial_xpath, agg , user, parent_Window);
 
-					driver.switchTo().window(parent_Window);
-					System.out.println("Back to parent window = " + driver.getTitle());
-				
+					}
+					else{
+	
+						createAggregate(hasAggText_xpath, agg , user, parent_Window);
+							
+					}
 				}
 				
-				
-			
-			
 			}
+			
+			//===============================================================================================
 			
 			user.signOut();
 
 		
 	  	System.out.println("End of script.");
 		
-	  	fh.close();
+	  	//fh.close();
 	  	
 		
 	}
 	
 	public static void runReportsFromDB(String environment) throws IOException{
-	
+	//TODO remove this code.  It has been moved to the User class.
 		//grab users from DB
 		Database db = new Database("localhost/qa_platform","root","qazwsx");
 		db.connect();
@@ -385,16 +365,12 @@ public class Projects {
 		}
 	
 	private static void createAggregate(HashMap hm, Aggregate agg, User user, String parent_Window){
-
-		//if not new or used click on dropdown arrow
-		if( agg.getAggType().equals("new") || agg.getAggType().equals("used")){
-			driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() ) ).click();
-		}
-		 
+		
+		driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() ) ).click();
+		
 		//input the agg name
 		driver.findElement(By.xpath(hm.get("input_box").toString() ) ).sendKeys(agg.getName() + " "+ agg.getUserType());
 		
-
 		//choose the value for the attribute
 		
 		driver.findElement(By.xpath( hm.get("attribute_available").toString() )).click();
@@ -416,9 +392,7 @@ public class Projects {
 		{
 			//click run document
 			driver.findElement(By.xpath(hm.get("run_btn").toString()) ).click();
-		}
-		catch(Exception e)
-		{
+		}catch(Exception e){
 			System.out.println(agg.getName() +" Timed Out.");
 		}
 			
@@ -428,7 +402,52 @@ public class Projects {
 		//switch back to parent window
 		driver.switchTo().window(parent_Window);
 		System.out.println("Back to parent window = " + driver.getTitle());
-
+		
 	}
+	private static void createAggregateToyotaFord(HashMap hm, Aggregate agg, User user, String parent_Window){
+		
+		//if dropdown is not collapsed
+		if( (driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() )).getClass()).equals("mstrBGIcon_treeNodeClosedOrphan mstrTreeViewNodeConnector")  ){
+			driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() ) ).click();
+		}
+
+	
+	//input the agg name
+	driver.findElement(By.xpath(hm.get("input_box").toString() ) ).sendKeys(agg.getName() + " "+ agg.getUserType());
+	
+
+	//choose the value for the attribute
+	
+	driver.findElement(By.xpath( hm.get("attribute_available").toString() )).click();
+	
+	//print the attribute for testing purposes
+	String element = driver.findElement(By.xpath(hm.get("attribute_available").toString() )).getText();
+	System.out.println("\n" + element);
+
+	//add the value to the selected box
+	user.clickON(hm.get("add_attribute_value").toString() );
+	
+	//select status
+	driver.findElement(By.xpath(hm.get("status_radio_btn").toString() )).click();
+	
+	//wait for the page to respond
+	user.waitMin( 15);
+	
+	try
+	{
+		//click run document
+		driver.findElement(By.xpath(hm.get("run_btn").toString()) ).click();
+	}catch(Exception e){
+		System.out.println(agg.getName() +" Timed Out.");
+	}
+		
+	//click on continue box90
+	driver.findElement(By.xpath(hm.get("top_breadcrumb").toString()) ).click();
+
+	//switch back to parent window
+	driver.switchTo().window(parent_Window);
+	System.out.println("Back to parent window = " + driver.getTitle());
+	
+}
 	
 }

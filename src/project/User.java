@@ -11,6 +11,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import database.Database;
 import files.FileHandler;
 
 public class User {
@@ -495,6 +496,49 @@ public  boolean isPasswordValid(){
 	
 	}
 	
+	public static void runReportsFromDB(String environment,WebDriver driver) throws IOException{
+		
+		//grab users from DB
+		Database db = new Database("localhost/qa_platform","root","qazwsx");
+		db.connect();
+		ArrayList<User> users = db.getUsersDB();
+		
+		int numOfUsers=10;
+		
+		//link users with their reports
+		for(int i=0;i<numOfUsers;i++){
+			User usr = users.get(i);
+			//System.out.println("user: "+usr.getUid()+ " password: " +usr.getPw() + " environment: "+ usr.getEnvironment());
+			
+			//set environment 
+			usr.setEnvironment(environment);
+			usr.setDriver(driver);
+		
+			//get reports pertaining to that user
+			ArrayList<Report> reports = new ArrayList<Report>();
+			reports= db.getReport(usr);
+			
+			usr.setReports(reports);
+		
+			usr.printReports();
 	
+		}
+		//link users with their reports
+				for(int i=0;i<numOfUsers;i++){
+					User usr = users.get(i);
+					
+					//System.out.println("user id: "+usr.getUid()+ " " +usr.getEnvironment()+ "Driver: "+usr.getDriver());
+					
+					if(usr.signIn()){
+						usr.runReportDB();
+						usr.signOut();
+					}
+					
+				}
+				
+				System.out.println("number of users: "+ users.size());
+				
+				db.disconnect();
+	}
 	
 }
