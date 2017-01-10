@@ -22,21 +22,35 @@ public class User {
 	private   WebDriver driver;
 	private int numOfUsers;
 	private ArrayList<Report> reports;
+	private String client;
 	
 	
 	//selenium objects
 	public static final String logoutButton = "//*[@id='menuTabs']/div[2]/div[1]/span[14]/a";
-	public static final String errorMessage = ".//*[@id='mstrWeb_error']/div/div[2]";
+	//public static final String errorMessage = ".//*[@id='mstrWeb_error']/div/div[2]";
+	public static final String errorMessage = "//*[@id='mstrWeb_error']/div/div[1]";//from dev3
 	public static final String runReportButton = "//*[@value='Run Report']";
-	public static final String topNavHomeLink = "//*[@name='tbHome']";
+//	public static final String topNavHomeLink = "//*[@name='tbHome']";
+	public static final String topNavHomeLink = "//*[@name='tbHome']";//from dev3
 	//public static final String topNavHomeLink = "//*[@id='projects_ProjectsStyle']/table/tbody/tr/td[1]/div/table/tbody/tr/td[2]/a";
-	
+	public static final String logoutButton_qa = "//*[@id='menuTabs']/div[3]/div/span[11]/a";
 	
 	public User(String id, String pw, String env,WebDriver drv){
 		uid = id;
 		password = pw;
 		environment = env;
 		driver= drv;
+	}
+	
+	public User(String id, String pw,String c){
+		uid = id;
+		password = pw;
+		client = c;
+		
+	}
+	public User(String id, String pw){
+		uid = id;
+		password = pw;
 	}
 	
 	public ArrayList<Report> getReports() {
@@ -47,12 +61,7 @@ public class User {
 		this.reports = reports;
 	}
 
-	public User(String id, String pw,int nou){
-		uid = id;
-		password = pw;
-		numOfUsers = nou;
-		
-	}
+	
 	
 	public  String getUid(){
 		return uid;
@@ -149,7 +158,7 @@ public class User {
 			}
 		}catch(Exception e){
 			
-			System.out.println("Password valid.  did not find error message.");
+			System.out.println("Signed in User: "+ getUid() +". Password valid.");
 			//e.printStackTrace();
 			return true;
 		}
@@ -187,20 +196,24 @@ public  boolean isPasswordValid(){
 	}
 	
 	public void signOut(){
-				
+		
 		//Find Logout and click on it;
 		//driver.findElement(By.id("3054")).click();
 //		driver.findElement(By.xpath("//a[contains(text(),'click here')]") ).click();
 //		driver.findElement(By.xpath("//*[@id='menuTabs']/div[2]/div[1]/span[14]/a") ).click();
-		
-		try{
-			driver.findElement(By.xpath(logoutButton) ).click();
+		waitSec(5);
+		//driver.findElement(By.xpath("//td[@id='td_mstrWeb_dockLeft']/div/div[@id='leftToolbar']/div/div[3]/div/span[11]/a[text()='Logout']") ).click();
+		driver.findElement(By.linkText("Logout")).click();
+		/*try{
+			driver.findElement(By.linkText("Logout")).click();
+			//driver.findElement(By.xpath(logoutButton) ).click();
 		}catch(Exception e){
-			driver.findElement(By.xpath(".//*[@id='mstrWeb_content']/div[1]/a") ).click();	
-		}
+			driver.findElement(by.l)
+			//driver.findElement(By.xpath(logoutButton_qa) ).click();	
+		}*/
 		
 		//driver.close();
-		System.out.println("Signed out\n");
+		System.out.println("Signed out "+ getUid() +"\n");
 	}
 	
 	public void clickON(String xpath,int waitSecs)
@@ -360,13 +373,10 @@ public  boolean isPasswordValid(){
 	
 	}
 	
-	
-	
 	//get reports pertaining to this user
 	public void runReportDB() throws IOException{
 		//TODO fool proof if file is not 
 		
-		 System.out.println(" i am here at run report db");
 		//get to home page
 		clickON("//a[text()='PIN Explorer']",1);
 		
@@ -376,8 +386,7 @@ public  boolean isPasswordValid(){
 			try{
 //				//get to the report
 //				//get file path and click through to the project
-//				System.out.println("Report: " + );
-//				
+				
 				//click through to project
 				String [] filePath = rpt.filePathStr.split("/");
 				for(String pth: filePath){
@@ -391,7 +400,7 @@ public  boolean isPasswordValid(){
 							clickON("//*[@id='main']/div[2]/li/span/a/span[text()='"+pth+"']",1);
 							System.out.println("ex. clicked on "+pth);
 						}
-						System.out.println("i am here ");
+						
 						
 				}
 				//  found = driver.findElements(By.xpath("//a[text()='"+ rpt.getFileName()+"']")).size() >0;
@@ -404,6 +413,8 @@ public  boolean isPasswordValid(){
 					//click on run report
 					clickON(runReportButton,10);
 					
+					
+					 
 					//look for second report button
 					try{
 						//click on run report
@@ -412,6 +423,7 @@ public  boolean isPasswordValid(){
 						System.out.println("Did not find second run button");
 					}
 					
+					 System.out.println("Running Report "+ rpt.getFileName() );
 					//wait 15 minutes
 					driver.manage().timeouts().implicitlyWait(15, TimeUnit.MINUTES);
 					
@@ -427,8 +439,8 @@ public  boolean isPasswordValid(){
 					
 					//click back home
 					clickON(topNavHomeLink,5000);
-					System.out.println("clicked home");
 					
+					//break;
 //				}else{
 //					//click back home
 //					clickON(topNavHomeLink,5000);
@@ -520,11 +532,11 @@ public  boolean isPasswordValid(){
 			
 			usr.setReports(reports);
 		
-			usr.printReports();
+			//usr.printReports();
 	
 		}
 		//link users with their reports
-				for(int i=0;i<numOfUsers;i++){
+				for(int i=2;i<numOfUsers;i++){
 					User usr = users.get(i);
 					
 					//System.out.println("user id: "+usr.getUid()+ " " +usr.getEnvironment()+ "Driver: "+usr.getDriver());

@@ -62,7 +62,7 @@ public class Database {
 		
 		while(rs.next()){
 			//System.out.println(rs.getString(2)+ " " +rs.getString(3));
-			User usr = new User(rs.getString(2),rs.getString(3),0);
+			User usr = new User(rs.getString(2),rs.getString(3),rs.getString(4));
 			users.add(usr);
 		}
 		
@@ -112,7 +112,7 @@ public class Database {
 				String [] path = rs.getString(1).split("/");
 				rpt = new Report( rs.getString(1), rs.getString(2) );
 				reports.add(rpt);
-				//System.out.println("from db report: "+rs.getString(1)+" "+ rs.getString(2));
+				//System.out.println("from db report: "+rs.getString(1)+" "+ rs.getString(2) );
 			}
 			
 			st.execute(sqlString);
@@ -127,7 +127,7 @@ public class Database {
 		
 	}
 	
-	//grab reports based on user
+	//grab aggregates based on userType
 		public ArrayList<Aggregate> getAggregates(String userType){
 			
 			Statement st;

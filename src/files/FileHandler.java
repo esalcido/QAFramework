@@ -92,7 +92,7 @@ public class FileHandler {
 			//put all tokens into a report
 			//the report object will get the filename automatically
 			
-			User rept = new User(params[0],params[1],Integer.parseInt(params[2]) );
+			User rept = new User(params[0],params[1] );
 			aList.add(rept);
 		
 		}
