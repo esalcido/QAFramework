@@ -44,25 +44,27 @@ public class Projects {
 		// TODO Auto-generated method stub
 
 		
-		HashMap<String,String> hmap = new HashMap<String,String>();
+		//HashMap<String,String> hmap = new HashMap<String,String>();
 		boolean pinEx=false,pinNav=false,pwIncorrect=false;
 		
-//		String environment = Environments.DEV86.url();
-		String environment = Environments.QA.url();
+		String environment = Environments.PROD.url();
+		//String environment = Environments.QA.url();
 		
 		String currentUser = "qausa";
 		//======================= Handle the files =================================
 		
 		//handles file with usernames and passwords
-//		FileHandler fh = new FileHandler("resources/users1.csv","resources/output/useroutput.csv");
-//		fh.createFile();
+		FileHandler fh = new FileHandler("resources/users1.csv","resources/output/useroutput.csv");
+		fh.createFile();
+		
+		runReportsFromFile(fh, environment);
 		
 		//reads in users and inserts them to the DB
 		//fh.readFileAddUsersToDB();
 		
 		//Run reports of users from the database
 			//runReportsFromDB(environment);
-			User.runReportsFromDB(environment,driver);
+			//User.runReportsFromDB(environment,driver);
 
 		//=============================================================================
 
@@ -84,53 +86,7 @@ public class Projects {
 	  	
 		
 	}
-	
-	public static void runReportsFromDB(String environment) throws IOException{
-	//TODO remove this code.  It has been moved to the User class.
-		//grab users from DB
-		Database db = new Database("localhost/qa_platform","root","qazwsx");
-		db.connect();
-		ArrayList<User> users = db.getUsersDB();
 		
-		int numOfUsers=10;
-		
-		//link users with their reports
-		for(int i=0;i<numOfUsers;i++){
-			User usr = users.get(i);
-			//System.out.println("user: "+usr.getUid()+ " password: " +usr.getPw() + " environment: "+ usr.getEnvironment());
-			
-			//set environment 
-			usr.setEnvironment(environment);
-			usr.setDriver(driver);
-		
-			//get reports pertaining to that user
-			ArrayList<Report> reports = new ArrayList<Report>();
-			reports= db.getReport(usr);
-			
-			usr.setReports(reports);
-		
-			usr.printReports();
-	
-		}
-		
-		//link users with their reports
-		for(int i=0;i<numOfUsers;i++){
-			User usr = users.get(i);
-			
-			//System.out.println("user id: "+usr.getUid()+ " " +usr.getEnvironment()+ "Driver: "+usr.getDriver());
-			
-			if(usr.signIn()){
-				usr.runReportDB();
-				usr.signOut();
-			}
-			
-		}
-		
-		System.out.println("number of users: "+ users.size());
-		
-		db.disconnect();
-	}
-	
 	public static void runReportsFromFile(FileHandler fh, String environment) throws IOException{
 		//get users from file
 		ArrayList<User> users = fh.readFileUsersArr();
@@ -165,17 +121,16 @@ public class Projects {
 			
 		}
 	  			
-		
+		fh.close();
 	}
 
-	public static void CreateAggs( String un, WebDriver driver, String environment){
+	public static void CreateAggs( String userName, WebDriver driver, String environment){
 
 
 		//grab users from DB
 					Database db = new Database("localhost/qa_platform","root","qazwsx");
 					db.connect();
 					
-					String userName = un;
 					String aggUserName = "";
 					User user = new User(userName,"4Quality@WLV",environment,driver);
 					user.signIn();

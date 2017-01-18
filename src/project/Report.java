@@ -33,9 +33,19 @@ public class Report {
 
 
 	public String[] getFilePath() {
+		
 		return filePath;
 	}
 
+	public String getFilePathStr(){
+		
+		String result="";
+		for(int i=0;i<filePath.length;i++){
+			result+= "/"+filePath[i];
+			}
+		
+		return result;
+	}
 
 	public void setFilePath(String[] filePath) {
 		this.filePath = filePath;

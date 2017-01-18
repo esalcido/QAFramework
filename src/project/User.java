@@ -144,7 +144,7 @@ public class User {
 		
 		waitSec(2);
 		boolean isDisplayed  = driver.findElement(By.xpath(errorMessage) ).isDisplayed();
-		System.out.println("is displayed: "+isDisplayed);
+		
 		if( ! isDisplayed){
 		//	if(driver.findElement(By.xpath("//a[text()='PIN Explorer']") ).isDisplayed()){
 				
@@ -152,7 +152,8 @@ public class User {
 				return true;
 			}
 			else{
-				
+//				System.out.println("is displayed: "+isDisplayed);
+				System.out.println("unable to sign in "+ getUid());
 				return false;
 				
 			}
@@ -273,8 +274,12 @@ public  boolean isPasswordValid(){
 	}
 	
 	public void printReports(){
+		
 		for(Report rpt:reports){
-			System.out.println("\t"+rpt.filePath+ " "+rpt.fileName);
+			
+			System.out.print(rpt.fileName + "path: "+ rpt.getFilePathStr());
+			
+			
 		}
 		
 	}
@@ -284,21 +289,33 @@ public  boolean isPasswordValid(){
 		
 		 boolean found=false;
 		
+		 waitSec(5);
+		 
 		//get report from file
 		FileHandler fh2 = new FileHandler("resources/reports.csv","resources/output/reportsoutput.csv");
 		fh2.createFile();
-		
+		try{
 		//get to home page
 		clickON("//a[text()='PIN Explorer']",1);
+		}catch(Exception e){
+			System.out.println("could not find PIN Explorer button");
+		}
 		
 		System.out.println("Fetching reports from Text file "+ fh2.getFileName());
 		
 			 ArrayList<Report> arrList = fh2.readFileArr();
 			System.out.println("Got 'em.\n");
 		
+			for(Report rep:arrList){
+
+				System.out.println( rep.getFileName() );	
+			}
+			
 			int maxAmnt = start + getNumOfUsers();
+			
+		
 		//run through all reports in the text file
-		for( int i =start;i< maxAmnt;i++){
+		for( int i =start;i < maxAmnt;i++){
 			try{
 				//get to the report
 				//get file path and click through to the project
@@ -306,8 +323,14 @@ public  boolean isPasswordValid(){
 				
 				//click through to project
 				String [] filePath = arrList.get(i).getFilePath();
+				
+				for(String p : filePath){
+					System.out.println("this is file path "+ arrList.get(i).filePathStr );
+				}
+				
+				waitSec(5);
 				for(String pth: filePath){
-					
+
 					//try{
 						try{
 							clickON("//a[text()='"+pth+"']",1);
@@ -320,11 +343,12 @@ public  boolean isPasswordValid(){
 						System.out.println("i am here ");
 						
 				}
-				  found = driver.findElements(By.xpath("//a[text()='"+arrList.get(i).getFileName()+"']")).size() >0;
-				System.out.println("file found:" +found );
+//				  found = driver.findElements(By.xpath("//a[text()='"+arrList.get(i).getFileName()+"']")).size() >0;
+//				System.out.println("file found:" +found );
+				
 				//click on project
 				
-				if(found){
+				//if(found){
 					clickON("//a[text()='"+arrList.get(i).getFileName()+"']",1);
 				
 					//click on run report
@@ -355,11 +379,11 @@ public  boolean isPasswordValid(){
 					clickON(topNavHomeLink,5000);
 					System.out.println("clicked home");
 					
-				}else{
-					//click back home
-					clickON(topNavHomeLink,5000);
-					System.out.println("clicked home");
-				}
+//				}else{
+//					//click back home
+//					clickON(topNavHomeLink,5000);
+//					System.out.println("clicked home");
+//				}
 			
 			}catch(Exception e){
 				
@@ -377,18 +401,24 @@ public  boolean isPasswordValid(){
 	public void runReportDB() throws IOException{
 		//TODO fool proof if file is not 
 		
+		System.out.println("entered run report method");
+		waitSec(5);
+		
 		//get to home page
 		clickON("//a[text()='PIN Explorer']",1);
+//		clickON("//a[text()='PIN Navigator']",1);
 		
 		//run through all reports in the text file
 		//for( int i =start;i< maxAmnt;i++){
 		for( Report rpt: reports){
 			try{
+				
 //				//get to the report
 //				//get file path and click through to the project
 				
 				//click through to project
 				String [] filePath = rpt.filePathStr.split("/");
+				
 				for(String pth: filePath){
 					System.out.println("clicked on "+pth);
 					//try{
@@ -399,6 +429,7 @@ public  boolean isPasswordValid(){
 						}catch(Exception e){
 							clickON("//*[@id='main']/div[2]/li/span/a/span[text()='"+pth+"']",1);
 							System.out.println("ex. clicked on "+pth);
+							
 						}
 						
 						
@@ -451,7 +482,7 @@ public  boolean isPasswordValid(){
 				
 				System.out.println("Something wrong happened. \n"+ e);
 				System.out.println("Trying next user.\n");
-				break;
+				//break;
 			}
 			
 		}
@@ -510,15 +541,17 @@ public  boolean isPasswordValid(){
 	
 	public static void runReportsFromDB(String environment,WebDriver driver) throws IOException{
 		
+		
+		
 		//grab users from DB
 		Database db = new Database("localhost/qa_platform","root","qazwsx");
 		db.connect();
 		ArrayList<User> users = db.getUsersDB();
 		
-		int numOfUsers=10;
+		int numOfUsers=20;
 		
 		//link users with their reports
-		for(int i=0;i<numOfUsers;i++){
+		for(int i=0;i<users.size();i++){
 			User usr = users.get(i);
 			//System.out.println("user: "+usr.getUid()+ " password: " +usr.getPw() + " environment: "+ usr.getEnvironment());
 			
@@ -531,15 +564,12 @@ public  boolean isPasswordValid(){
 			reports= db.getReport(usr);
 			
 			usr.setReports(reports);
-		
-			//usr.printReports();
+	
 	
 		}
 		//link users with their reports
-				for(int i=2;i<numOfUsers;i++){
+				for(int i=0;i<users.size();i++){
 					User usr = users.get(i);
-					
-					//System.out.println("user id: "+usr.getUid()+ " " +usr.getEnvironment()+ "Driver: "+usr.getDriver());
 					
 					if(usr.signIn()){
 						usr.runReportDB();
