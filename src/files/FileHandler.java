@@ -125,7 +125,7 @@ public class FileHandler {
 			String [] params ;
 			params = lineofText.split(",");
 			
-			System.out.println(params[0]+" "+params[1]);
+			System.out.println(params[0]+" "+params[1] +" "+params[2]);
 			//put all tokens into a report
 			//the report object will get the filename automatically
 			db.insertUsers(params);

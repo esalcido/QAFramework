@@ -86,7 +86,7 @@ public class Database {
 		try{
 			st = con.createStatement();
 			
-			String sqlString = "INSERT INTO user(uid,password) VALUES('"+params[0]+"','"+params[1]+"')";
+			String sqlString = "INSERT INTO user(uid,password,client) VALUES('"+params[0]+"','"+params[1]+"','"+params[2]+"')";
 			
 			st.execute(sqlString);
 			st.close();

@@ -96,6 +96,7 @@ public class Projects {
 			//set env and driver for them
 			usr.setEnvironment(environment);
 			usr.setDriver(driver);
+			//usr.setNumOfUsers(users.size());
 			
 			
   			fh.writeToFile("User: "+usr.getUid()+",");
@@ -110,7 +111,7 @@ public class Projects {
   				//run a report
   				usr.runReport(marker);
   				
-	  			usr.signOut();
+	  			//usr.signOut();
 	  			
 	  			marker += usr.getNumOfUsers();
   			}

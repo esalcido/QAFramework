@@ -306,14 +306,8 @@ public  boolean isPasswordValid(){
 			 ArrayList<Report> arrList = fh2.readFileArr();
 			System.out.println("Got 'em.\n");
 		
-			for(Report rep:arrList){
-
-				System.out.println( rep.getFileName() );	
-			}
+			int maxAmnt = start + arrList.size();
 			
-			int maxAmnt = start + getNumOfUsers();
-			
-		
 		//run through all reports in the text file
 		for( int i =start;i < maxAmnt;i++){
 			try{
@@ -325,23 +319,24 @@ public  boolean isPasswordValid(){
 				String [] filePath = arrList.get(i).getFilePath();
 				
 				for(String p : filePath){
-					System.out.println("this is file path "+ arrList.get(i).filePathStr );
+					System.out.println("this is file path "+ p);
 				}
 				
-				waitSec(5);
+				
 				for(String pth: filePath){
 
 					//try{
 						try{
-							clickON("//a[text()='"+pth+"']",1);
+							clickON("//a[text()='"+pth+"']");
 							System.out.println("clicked on "+pth);
 		
 						}catch(Exception e){
-							clickON("//*[@id='main']/div[2]/li/span/a/span[text()='"+pth+"']",1);
+							clickON("//*[@class='mstrMenuContent']/span/a[text()='"+pth+"']",1);
 							System.out.println("ex. clicked on "+pth);
+							waitSec(5);
 						}
 						System.out.println("i am here ");
-						
+						waitSec(5);
 				}
 //				  found = driver.findElements(By.xpath("//a[text()='"+arrList.get(i).getFileName()+"']")).size() >0;
 //				System.out.println("file found:" +found );
