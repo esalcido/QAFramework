@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.time.StopWatch;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -294,9 +295,13 @@ public  boolean isPasswordValid(){
 		//get report from file
 		FileHandler fh2 = new FileHandler("resources/reports.csv","resources/output/reportsoutput.csv");
 		fh2.createFile();
+		
+//		String projectString = "PIN Explorer";
+		String projectString = "PIN Navigator";
+		
 		try{
 		//get to home page
-		clickON("//a[text()='PIN Explorer']",1);
+		clickON("//a[text()='"+ projectString +"']",1);
 		}catch(Exception e){
 			System.out.println("could not find PIN Explorer button");
 		}
@@ -321,17 +326,22 @@ public  boolean isPasswordValid(){
 				for(String p : filePath){
 					System.out.println("this is file path "+ p);
 				}
+	
 				
 				
 				for(String pth: filePath){
-
+					waitSec(10);
 					//try{
 						try{
-							clickON("//a[text()='"+pth+"']");
+							clickON("//a[text()='"+pth+"']",2);
 							System.out.println("clicked on "+pth);
 		
 						}catch(Exception e){
-							clickON("//*[@class='mstrMenuContent']/span/a[text()='"+pth+"']",1);
+							//clickON(".//*[@id='main']/div[1]/li/span/a",2);
+							System.out.println("clicked on "+pth);
+						}finally{
+							//clickON("//*[@class='mstrMenuContent']/span/a[text()='"+pth+"']",1);
+							//clickON("//*[@id='FolderIcons']/tbody/tr[1]/td[2]/div/table/tbody/tr/td[2]/div/span/a[text()='"+pth+"']");
 							System.out.println("ex. clicked on "+pth);
 							waitSec(5);
 						}
@@ -357,23 +367,38 @@ public  boolean isPasswordValid(){
 						System.out.println("Did not find second run button");
 					}
 					
+					//instantiate a stop watch
+					StopWatch stopwatch = new StopWatch();
+						
+					//start the timer 
+					stopwatch.start();
 					//wait 15 minutes
 					driver.manage().timeouts().implicitlyWait(15, TimeUnit.MINUTES);
 					
 					//look for toolbar
 					//class="mstrTabbedMenuVBoxItem"
-					if( driver.findElement(By.xpath("//*[@class='mstrTabbedMenuVBoxItem']") ).isDisplayed()){
+//					if( driver.findElement(By.xpath("//*[@class='mstrTabbedMenuVBoxItem']") ).isDisplayed()){
+					if( driver.findElement(By.xpath("//*[@id='tbSave']") ).isDisplayed()){
 					
 						System.out.println("Ran Report: "+ arrList.get(i).getFileName());
+						//stop the watch
+						stopwatch.stop();
+						
 					}
 					else{
 						System.out.println("Did not run report");
 					}
 					
-					//click back home
-					clickON(topNavHomeLink,5000);
-					System.out.println("clicked home");
 					
+					
+					System.out.println("time: "+ stopwatch);
+					fh2.writeToFile(arrList.get(i).getFileName() + ","+ stopwatch+"\r\n");
+					
+					//click back home
+					//clickON(topNavHomeLink,5000);
+					clickON("//*[@id='pathBean_ReportPathStyle']/div[2]/div[1]/div[2]/span[1]/a[@class='mstrLink']",5000);
+					System.out.println("clicked home");
+					waitSec(5);
 //				}else{
 //					//click back home
 //					clickON(topNavHomeLink,5000);
@@ -382,9 +407,12 @@ public  boolean isPasswordValid(){
 			
 			}catch(Exception e){
 				
-				System.out.println("Something wrong happened. \n"+ e);
+				System.out.println("Something wrong happened. \n");
+				
+				e.printStackTrace();
 				System.out.println("Trying next user.\n");
-				break;
+				
+				//break;
 			}
 			
 		}

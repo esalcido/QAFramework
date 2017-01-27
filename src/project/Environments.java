@@ -8,8 +8,12 @@ public enum Environments {
 	DEV3("http://10.22.106.3/pin/asp/Main.aspx"),
 	DEV("https://www.dev-pin.jdpower.com/pin/asp/Main.aspx"),
 	
-	QA("https://www.pinexplorerqa.jdpa.com/MicroStrategy/asp/Main.aspx"),
-	PROD("https://www.pinexplorer.jdpa.com/MicroStrategy/asp/Main.aspx");
+	QAEXP("https://www.pinexplorerqa.jdpa.com/MicroStrategy/asp/Main.aspx"),
+	QA2("http://10.22.104.2/PIN/asp/Main.aspx"),
+	QA3("http://10.22.104.3/PIN/asp/Main.aspx"),
+	
+	
+	PRODEXP("https://www.pinexplorer.jdpa.com/MicroStrategy/asp/Main.aspx");
 	
 	private String env;
 	

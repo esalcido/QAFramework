@@ -47,17 +47,19 @@ public class Projects {
 		//HashMap<String,String> hmap = new HashMap<String,String>();
 		boolean pinEx=false,pinNav=false,pwIncorrect=false;
 		
-		String environment = Environments.PROD.url();
+		String environment = Environments.QA3.url();
 		//String environment = Environments.QA.url();
 		
-		String currentUser = "qausa";
+		String currentUser = "qagst";
 		//======================= Handle the files =================================
 		
 		//handles file with usernames and passwords
 		FileHandler fh = new FileHandler("resources/users1.csv","resources/output/useroutput.csv");
 		fh.createFile();
 		
-		runReportsFromFile(fh, environment);
+		//handles output file from agg creation
+		FileHandler agFh = new FileHandler("resources/users1.csv","resources/output/aggResults.csv");
+		//runReportsFromFile(fh, environment);
 		
 		//reads in users and inserts them to the DB
 		//fh.readFileAddUsersToDB();
@@ -69,16 +71,13 @@ public class Projects {
 		//=============================================================================
 
 		//create aggs  
-		//CreateAggs( currentUser, driver,environment);
+		CreateAggs( currentUser, driver,environment,agFh);
 		
 		//delete aggs
 		//deleteAggs( currentUser, driver,environment);
 		
-		
 		//===============================================================================================
 			
-			
-
 		
 	  	System.out.println("End of script.");
 		
@@ -125,7 +124,7 @@ public class Projects {
 		fh.close();
 	}
 
-	public static void CreateAggs( String userName, WebDriver driver, String environment){
+	public static void CreateAggs( String userName, WebDriver driver, String environment, FileHandler fh){
 
 
 		//grab users from DB
@@ -263,20 +262,20 @@ public class Projects {
 						//enter aggregate name
 						if( agg.getName().equals("Toyota Region Aggregates")){
 							user.waitSec(5);
-							doAggregateActionsToyotaFord(dev90_toyota_xpath, agg, user, parent_Window);
+							doAggregateActionsToyotaFord(dev90_toyota_xpath, agg, user, parent_Window,fh);
 							
 						}
 						else if( agg.getName().equals("Ford Market & Region Aggregates") ){
 							
-							doAggregateActionsToyotaFord(dev90_fordmarkets_xpath, agg, user, parent_Window);
+							doAggregateActionsToyotaFord(dev90_fordmarkets_xpath, agg, user, parent_Window,fh);
 						}
 						else if(agg.getAggType().equals("new") ){
 							System.out.println("creating new");
-							doAggregateActions(new_aggs_xpath, agg , user, parent_Window);
+							doAggregateActions(new_aggs_xpath, agg , user, parent_Window,fh);
 						}
 						else if(agg.getAggType().equals("used") ){
 							System.out.println("creating used");
-							doAggregateActions(used_aggs_xpath, agg , user, parent_Window);
+							doAggregateActions(used_aggs_xpath, agg , user, parent_Window,fh);
 						}
 						else{
 
@@ -289,12 +288,12 @@ public class Projects {
 				
 								System.out.println("titleText: " + titleText);
 								
-								doAggregateActions(initial_xpath, agg , user, parent_Window);
+								doAggregateActions(initial_xpath, agg , user, parent_Window,fh);
 
 							}
 							else{
 			
-								doAggregateActions(hasAggText_xpath, agg , user, parent_Window);
+								doAggregateActions(hasAggText_xpath, agg , user, parent_Window,fh);
 									
 							}
 						}
@@ -330,7 +329,7 @@ public class Projects {
 
 		}
 	
-	private static void doAggregateActions(HashMap hm, Aggregate agg, User user, String parent_Window){
+	private static void doAggregateActions(HashMap hm, Aggregate agg, User user, String parent_Window,FileHandler fh){
 		
 		driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() ) ).click();
 		
@@ -344,7 +343,13 @@ public class Projects {
 		//print the attribute for testing purposes
 		String element = driver.findElement(By.xpath(hm.get("attribute_available").toString() )).getText();
 		System.out.println("\n" + element);
-
+//		try {
+//			fh.writeToFile(agg.getName()+ ","+element);
+//		} catch (IOException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
+		
 		//add the value to the selected box
 		user.clickON(hm.get("add_attribute_value").toString() );
 		
@@ -370,7 +375,7 @@ public class Projects {
 		System.out.println("Back to parent window = " + driver.getTitle());
 		
 	}
-	private static void doAggregateActionsToyotaFord(HashMap hm, Aggregate agg, User user, String parent_Window){
+	private static void doAggregateActionsToyotaFord(HashMap hm, Aggregate agg, User user, String parent_Window,FileHandler fh){
 		
 		//if dropdown is not collapsed
 		if( (driver.findElement(By.xpath(hm.get("dropdown_arrow").toString() )).getClass()).equals("mstrBGIcon_treeNodeClosedOrphan mstrTreeViewNodeConnector")  ){
@@ -389,7 +394,13 @@ public class Projects {
 	//print the attribute for testing purposes
 	String element = driver.findElement(By.xpath(hm.get("attribute_available").toString() )).getText();
 	System.out.println("\n" + element);
-
+//	try {
+//		fh.writeToFile(agg.getName()+ ","+element);
+//	} catch (IOException e1) {
+//		// TODO Auto-generated catch block
+//		e1.printStackTrace();
+//	}
+	
 	//add the value to the selected box
 	user.clickON(hm.get("add_attribute_value").toString() );
 	
@@ -416,7 +427,7 @@ public class Projects {
 	
 }
 	
-	public static void deleteAggs( String un, WebDriver driver, String environment){
+	public static void deleteAggs( String un, WebDriver driver, String environment,FileHandler fh){
 
 
 		//grab users from DB
@@ -562,20 +573,20 @@ public class Projects {
 						//enter aggregate name
 						if( agg.getName().equals("Toyota Region Aggregates")){
 							user.waitSec(5);
-							doAggregateActionsToyotaFord(dev90_toyota_xpath, agg, user, parent_Window);
+							doAggregateActionsToyotaFord(dev90_toyota_xpath, agg, user, parent_Window,fh);
 							
 						}
 						else if( agg.getName().equals("Ford Market & Region Aggregates") ){
 							
-							doAggregateActionsToyotaFord(dev90_fordmarkets_xpath, agg, user, parent_Window);
+							doAggregateActionsToyotaFord(dev90_fordmarkets_xpath, agg, user, parent_Window,fh);
 						}
 						else if(agg.getAggType().equals("new") ){
 							System.out.println("creating new");
-							doAggregateActions(new_aggs_xpath, agg , user, parent_Window);
+							doAggregateActions(new_aggs_xpath, agg , user, parent_Window,fh);
 						}
 						else if(agg.getAggType().equals("used") ){
 							System.out.println("creating used");
-							doAggregateActions(used_aggs_xpath, agg , user, parent_Window);
+							doAggregateActions(used_aggs_xpath, agg , user, parent_Window,fh);
 						}
 						else{
 							System.out.println("its here!");
